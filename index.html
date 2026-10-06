@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammar Scoring Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title-row">
+        <svg xmlns="http://www.w3.org/2000/svg" class="header-icon" width="22" height="22" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M15 8a3 3 0 0 0 -6 0v7a3 3 0 0 0 6 0v-7z" />
+          <path d="M19 10v2a7 7 0 0 1 -14 0v-2" />
+          <path d="M12 19v3" />
+        </svg>
+        <h1 class="header-title">Grammar scoring engine</h1>
+      </div>
+      <p class="header-subtitle">Spoken audio grammar evaluation and acoustic analytics</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" id="tab-eval-btn" onclick="switchTab('eval')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+          <path d="M12 9v4" />
+          <path d="M12 16v.01" />
+        </svg>
+        Audio evaluation
+      </button>
+      <button class="nav-tab" id="tab-metrics-btn" onclick="switchTab('metrics')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M3 12m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+          <path d="M9 8m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+          <path d="M15 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+        </svg>
+        Model metrics
+      </button>
+      <button class="nav-tab" id="tab-sub-btn" onclick="switchTab('sub')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+          <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+          <path d="M9 15l2 2l4 -4" />
+        </svg>
+        Submission
+      </button>
+    </nav>
+
+    <!-- SECTION 1: Audio Evaluation -->
+    <main id="section-eval" class="section-content">
+      
+      <!-- Upload & Audio Select Card -->
+      <div class="card">
+        <h2 class="card-title">Select or upload audio file</h2>
+        
+        <!-- File Upload Drag Zone -->
+        <div class="upload-zone" onclick="triggerFileInput()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+            <path d="M7 9l5 -5l5 5" />
+            <path d="M12 4l0 12" />
+          </svg>
+          <div class="upload-text">
+            <span class="upload-title">Click to upload WAV audio file</span>
+            <span class="upload-hint">Supports 45-60 second .wav recordings</span>
+          </div>
+          <input type="file" id="upload-input" accept=".wav,audio/wav" style="display: none;" onchange="handleFileUpload(event)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="audio-select">Or select sample from dataset</label>
+          <select id="audio-select" class="form-input" onchange="onAudioSelectChange()">
+            <option value="audio_192.wav">audio_192.wav (sample 1)</option>
+            <option value="audio_436.wav">audio_436.wav (sample 2)</option>
+            <option value="audio_447.wav">audio_447.wav (sample 3)</option>
+            <option value="audio_0.wav">audio_0.wav (sample 4)</option>
+          </select>
+        </div>
+
+        <div class="audio-controls-row">
+          <audio id="audio-player" controls class="audio-element"></audio>
+          <button class="btn btn-primary" id="start-eval-btn" onclick="startLiveEvaluation()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M7 4v16l13 -8z" />
+            </svg>
+            Evaluate grammar
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Stream Progress Card (Hidden by default, shown during SSE stream) -->
+      <div id="live-progress-card" class="card" style="display: none;">
+        <h2 class="card-title">Live pipeline execution</h2>
+        
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+
+        <div class="status-message-row">
+          <div class="spinner-icon" id="status-spinner"></div>
+          <span class="status-message" id="status-message">Initializing processing pipeline...</span>
+        </div>
+      </div>
+
+      <!-- Analysis Results Card -->
+      <div id="results-card" class="card">
+        <div class="results-header">
+          <h2 class="card-title">Evaluation summary</h2>
+          <span class="score-badge" id="score-display">-- / 5.0</span>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <span class="metric-box-label">Predicted grammar score</span>
+            <span class="metric-box-value" id="val-grammar-score">3.31</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box-label">Speaking rate</span>
+            <span class="metric-box-value" id="val-speech-rate">124.5 WPM</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box-label">Silence ratio</span>
+            <span class="metric-box-value" id="val-silence-ratio">18.2%</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box-label">Pause count</span>
+            <span class="metric-box-value" id="val-pause-count">8 pauses</span>
+          </div>
+        </div>
+
+        <div class="transcript-group">
+          <label class="form-label">Whisper speech-to-text transcript</label>
+          <div class="transcript-box" id="transcript-text">
+            "There was a day in the airport that I wanted to go with my mom to Panama. In this day I was trying to buy her tickets, but actually I didn't remember her ID number..."
+          </div>
+        </div>
+
+        <div class="details-group">
+          <label class="form-label">Acoustic and prosodic metrics</label>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Value</th>
+                <th>Benchmark</th>
+              </tr>
+            </thead>
+            <tbody id="acoustic-table-body">
+              <tr>
+                <td>Duration</td>
+                <td>45.06 s</td>
+                <td>45.00 – 60.00 s</td>
+              </tr>
+              <tr>
+                <td>Active speaking duration</td>
+                <td>36.85 s</td>
+                <td>> 35.00 s</td>
+              </tr>
+              <tr>
+                <td>Spectral centroid mean</td>
+                <td>1842.4 Hz</td>
+                <td>1500 – 2500 Hz</td>
+              </tr>
+              <tr>
+                <td>Zero crossing rate</td>
+                <td>0.0642</td>
+                <td>0.0400 – 0.0900</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- SECTION 2: Model Metrics -->
+    <main id="section-metrics" class="section-content" style="display: none;">
+      <div class="card">
+        <h2 class="card-title">Cross-validation metrics</h2>
+        <p class="card-description">5-fold stratified cross-validation results across gradient boosted tree models and linear ridge regression.</p>
+
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <span class="metric-box-label">Mandatory training RMSE</span>
+            <span class="metric-box-value">0.3046</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box-label">Validation OOF RMSE</span>
+            <span class="metric-box-value">0.7780</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-box-label">Validation Pearson r</span>
+            <span class="metric-box-value">0.7786</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Fold breakdown</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Fold</th>
+              <th>Validation RMSE</th>
+              <th>Validation Pearson r</th>
+              <th>Ensemble models</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fold 1</td>
+              <td>0.8334</td>
+              <td>0.7382</td>
+              <td>LightGBM, XGBoost, CatBoost, Ridge</td>
+            </tr>
+            <tr>
+              <td>Fold 2</td>
+              <td>0.8232</td>
+              <td>0.7288</td>
+              <td>LightGBM, XGBoost, CatBoost, Ridge</td>
+            </tr>
+            <tr>
+              <td>Fold 3</td>
+              <td>0.7066</td>
+              <td>0.8457</td>
+              <td>LightGBM, XGBoost, CatBoost, Ridge</td>
+            </tr>
+            <tr>
+              <td>Fold 4</td>
+              <td>0.8028</td>
+              <td>0.7311</td>
+              <td>LightGBM, XGBoost, CatBoost, Ridge</td>
+            </tr>
+            <tr>
+              <td>Fold 5</td>
+              <td>0.7138</td>
+              <td>0.8254</td>
+              <td>LightGBM, XGBoost, CatBoost, Ridge</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- SECTION 3: Submission Viewer -->
+    <main id="section-sub" class="section-content" style="display: none;">
+      <div class="card">
+        <div class="results-header">
+          <div>
+            <h2 class="card-title">Competition submission file</h2>
+            <p class="card-description">Verified submission predictions formatted for Kaggle evaluation.</p>
+          </div>
+          <button class="btn btn-outline" onclick="downloadSubmission()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" fill="none">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+              <path d="M7 11l5 5l5 -5" />
+              <path d="M12 4l0 12" />
+            </svg>
+            Download CSV
+          </button>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Predicted score (0.0 - 5.0)</th>
+            </tr>
+          </thead>
+          <tbody id="sub-table-body">
+            <tr><td>audio_804.wav</td><td>3.3134</td></tr>
+            <tr><td>audio_1028.wav</td><td>3.3134</td></tr>
+            <tr><td>audio_865.wav</td><td>3.3134</td></tr>
+            <tr><td>audio_14.wav</td><td>3.1408</td></tr>
+            <tr><td>audio_27.wav</td><td>3.1108</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Grammar scoring engine model pipeline</span>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

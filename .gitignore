@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+catboost_info/
+
+# Large Datasets & Media
+Dataset_Final/
+cache/
+*.zip
+*.wav
+*.mp3
+
+# Environment & Private Tokens
+.env
+.kaggle/
+kaggle.json
+access_token
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE / OS junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
