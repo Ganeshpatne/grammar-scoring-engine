@@ -48,10 +48,10 @@ def main():
     # Save predictions to test dataframe
     df_test_feat["pred_label"] = test_preds
     
-    # Map predictions to sample_submission format
+    # Map predictions to test.csv format (216 test rows)
     sub_map = dict(zip(df_test_feat["filename"], df_test_feat["pred_label"]))
     
-    sub_df = df_sub_raw.copy()
+    sub_df = df_test_raw[["filename", "label"]].copy()
     sub_df["label"] = sub_df["filename"].map(sub_map)
     
     # Fallback for any unmapped test files

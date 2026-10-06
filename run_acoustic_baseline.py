@@ -164,18 +164,18 @@ def main():
     print(f"VALIDATION PEARSON CORR (r):   {oof_corr:.4f}", flush=True)
     print("==============================================", flush=True)
     
-    # Save Baseline Submission
+    # Save Submission (216 test rows)
     df_test_ac["pred_label"] = np.clip(test_preds, 0.0, 5.0)
     sub_map = dict(zip(df_test_ac["filename"], df_test_ac["pred_label"]))
     
-    sub_df = df_sub_raw.copy()
+    sub_df = df_test_raw[["filename", "label"]].copy()
     sub_df["label"] = sub_df["filename"].map(sub_map)
     sub_df["label"] = sub_df["label"].fillna(df_train_raw["label"].mean())
     sub_df["label"] = np.clip(sub_df["label"], 0.0, 5.0)
     
-    out_sub_path = os.path.join(SUBMISSION_DIR, "submission_baseline.csv")
+    out_sub_path = os.path.join(SUBMISSION_DIR, "submission.csv")
     sub_df.to_csv(out_sub_path, index=False)
-    print(f"Saved baseline submission to {out_sub_path} (shape: {sub_df.shape})", flush=True)
+    print(f"Saved submission to {out_sub_path} (shape: {sub_df.shape})", flush=True)
 
 if __name__ == "__main__":
     main()
